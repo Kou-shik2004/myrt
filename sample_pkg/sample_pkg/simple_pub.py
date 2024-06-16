@@ -6,7 +6,7 @@ from std_msgs.msg import String
 class SimplePublisher(Node):
 
     def __init__(self):
-        super().__init__("simple_publisher")
+        super().__init__("simple_rpi_publisher")
         self.pub_ = self.create_publisher(String, "talk", 20)
         self.counter_ = 0
         self.frequency_ = 1.0

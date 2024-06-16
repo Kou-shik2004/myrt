@@ -6,7 +6,7 @@ from std_msgs.msg import String
 class SimpleSubscriber(Node):
 
     def __init__(self):
-        super().__init__("simple_subscriber")
+        super().__init__("simple_rpi_subscriber")
         self.sub_ = self.create_subscription(String, "talk", self.msgCallback, 10)
 
     def msgCallback(self, msg):
