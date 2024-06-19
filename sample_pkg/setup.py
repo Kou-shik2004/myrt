@@ -19,7 +19,7 @@ setup(
     license='TODO: License declaration',
     tests_require=['pytest'],
     entry_points={
-        'console_scripts': ["pub_node=sample_pkg.simple_pub:main","sub_node=sample_pkg.simple_sub:main",
+        'console_scripts': ["cam_node=sample_pkg.video_publisher:main","pub_node=sample_pkg.simple_pub:main","sub_node=sample_pkg.simple_sub:main",
         ],
     },
 )
