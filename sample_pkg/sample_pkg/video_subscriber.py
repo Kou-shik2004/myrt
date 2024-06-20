@@ -24,9 +24,9 @@ class Camera_sub(Node):
             color.append(col)
 
         contour_list=msg.cnt
+        
+        contour_list=[np.array(contour.points) for contour in contour_list]
 
-        for contour in contour_list:
-            contour=np.array(contour)
 
         for color, cnt in zip(color, contour_list):
 
