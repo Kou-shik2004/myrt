@@ -21,9 +21,9 @@ class Camera_sub(Node):
         cnt=[]
         for col in msg.col:
             color.append(col)
-        cnt=msg.cnt
-        print(cnt)
-        for color, cnt in zip(color, cnt):
+        connn=msg.cnt
+
+        for color, cnt in zip(color, connn):
 
             x, y, w, h = cv2.boundingRect(cnt)
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
