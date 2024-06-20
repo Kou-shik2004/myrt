@@ -65,7 +65,7 @@ class Video_Publisher(Node):
         else:
             print("No cylinders detected.")
 
-        frame_msg = self.bridge.cv2_to_imgmsg(frame, "mono8")
+        frame_msg = self.bridge.cv2_to_imgmsg(frame, "bgr8")
         self.pub_.publish(frame_msg)
 
     def destroy_node(self):
