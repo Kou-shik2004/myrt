@@ -11,7 +11,7 @@ class Video_Publisher(Node):
     def __init__(self):
         super().__init__('rpi_video_publisher')
         self.pub_ = self.create_publisher(Image, '/rpi_video_feed', 10)
-        timer_period = 0.1
+        timer_period = 0.05
         self.timer_ = self.create_timer(timer_period, self.cameraCallback)
         self.cap = cv2.VideoCapture(0)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
