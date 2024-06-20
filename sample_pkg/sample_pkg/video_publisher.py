@@ -14,8 +14,8 @@ class Video_Publisher(Node):
         timer_period = 0.5
         self.timer_ = self.create_timer(timer_period, self.cameraCallback)
         self.cap = cv2.VideoCapture(0)
-        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 320)
-        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 240)
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
         self.bridge = CvBridge()
 
     def cameraCallback(self):
