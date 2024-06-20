@@ -3,7 +3,7 @@ import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Image
 from std_msgs.msg import String
-from custom_msgs.msg import Contour,ImagePlusTupleList
+from custom_msgs.msg import Point,Contour,ImagePlusTupleList
 import cv2
 from cv_bridge import CvBridge
 import numpy as np
@@ -64,14 +64,18 @@ class Video_Publisher(Node):
         msg = ImagePlusTupleList()
 
         for color, cnt in detected_cylinders:
-            for point in cnt:
-                cnt_msg = Contour()
-                x, y = point[0]  # Extracting x and y from the point
-                cnt_msg.x = int(x)
-                cnt_msg.y = int(y)
-                msg.cnt.append(cnt_msg)
             col_list.append(color)
-
+            contour_list = [contour.tolist() for contour in cnt] #numpy array to normal
+            for points_list in contour_list:
+                c = Contour()
+                for points in points_list:
+                    p = Point()
+                    p.x = points[0]
+                    p.y = points[1]
+                    c.points.append(p)
+                msg.cnt.append(c)
+                   
+        
         if detected_cylinders:
             print("Detected cylinders:")
         for color, approx in detected_cylinders:
@@ -80,7 +84,6 @@ class Video_Publisher(Node):
             print("No cylinders detected.")
 
         frame_msg = self.bridge.cv2_to_imgmsg(frame, "bgr8")
-        msg = ImagePlusTupleList()
         msg.image = frame_msg
         msg.col=col_list
         self.pub_.publish(msg)
