@@ -3,9 +3,17 @@ import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Image
 from std_msgs.msg import String
+from custom_msgs.msg import Contour,ImagePlusTupleList
 import cv2
 from cv_bridge import CvBridge
 import numpy as np
+
+color_ranges = {
+    "red": ([0, 100, 100], [10, 255, 255]),
+    "green": ([40, 70, 50], [90, 255, 255]),
+    "blue": ([90, 70, 50], [130, 255, 255]),
+    "yellow": ([20, 100, 100], [30, 255, 255])
+}
 
 def detect_cylinders(frame):
     detected_cylinders = []
@@ -13,12 +21,6 @@ def detect_cylinders(frame):
     # Convert to HSV color space
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     
-    color_ranges = {
-        "red": ((0, 100, 100), (10, 255, 255)),
-        "green": ((50, 100, 100), (70, 255, 255)),
-        "blue": ((100, 100, 100), (130, 255, 255)),
-        # Add more color ranges as needed
-    }
     # Loop through each color range
     for color, (lower, upper) in color_ranges.items():
         # Create a mask for the current color range
@@ -29,12 +31,12 @@ def detect_cylinders(frame):
         
         # Loop through each contour
         for cnt in contours:
-            # Approximate the contour to a polygon
-            approx = cv2.approxPolyDP(cnt, 0.01 * cv2.arcLength(cnt, True), True)
+            # Approximate the contour to a circle
+            (x, y), radius = cv2.minEnclosingCircle(cnt)
             
-            # Check if the polygon has the desired number of sides
-            if len(approx) >= 6:  # Cylinder-like shape
-                detected_cylinders.append((color, approx))
+            # Check if the contour is approximately circular
+            if radius > 10:  # Adjust this value based on your requirements
+                detected_cylinders.append((color, cnt))
     
     return detected_cylinders
 
@@ -42,7 +44,7 @@ class Video_Publisher(Node):
 
     def __init__(self):
         super().__init__('rpi_video_publisher')
-        self.pub_ = self.create_publisher(Image, '/rpi_video_feed', 10)
+        self.pub_ = self.create_publisher(ImagePlusTupleList, '/rpi_video_feed', 10)
         timer_period = 0.05
         self.timer_ = self.create_timer(timer_period, self.cameraCallback)
         self.cap = cv2.VideoCapture(0)
@@ -57,6 +59,18 @@ class Video_Publisher(Node):
             return
         #frame=cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         detected_cylinders = detect_cylinders(frame)
+        
+        col_list=[]
+        msg = ImagePlusTupleList()
+
+        for color, cnt in detected_cylinders:
+            for point in cnt:
+                cnt_msg = Contour()
+                x, y = point[0]  # Extracting x and y from the point
+                cnt_msg.x = int(x)
+                cnt_msg.y = int(y)
+                msg.cnt.append(cnt_msg)
+            col_list.append(color)
 
         if detected_cylinders:
             print("Detected cylinders:")
@@ -66,7 +80,10 @@ class Video_Publisher(Node):
             print("No cylinders detected.")
 
         frame_msg = self.bridge.cv2_to_imgmsg(frame, "bgr8")
-        self.pub_.publish(frame_msg)
+        msg = ImagePlusTupleList()
+        msg.image = frame_msg
+        msg.col=col_list
+        self.pub_.publish(msg)
 
     def destroy_node(self):
         self.cap.release()
