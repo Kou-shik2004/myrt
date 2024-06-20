@@ -17,6 +17,8 @@ class Camera_sub(Node):
         self.bridge=CvBridge()
 
     def camCallback(self, msg):
+        display_frame = frame.copy()
+        print(f"Received message with {len(msg.col)} colors and {len(msg.cnt)} contours")
         frame = self.bridge.imgmsg_to_cv2(msg.image, "bgr8")
         colors = msg.col
         contours = msg.cnt
@@ -29,10 +31,17 @@ class Camera_sub(Node):
             cnt = cnt.reshape((-1, 1, 2))
 
             x, y, w, h = cv2.boundingRect(cnt)
-            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-            cv2.putText(frame, color, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+            print(f"Drawing bounding box for {color} cylinder at ({x}, {y}) with size {w}x{h}")
+            
+            if len(cnt) >= 4:  # A valid contour should have at least 4 points
+                x, y, w, h = cv2.boundingRect(cnt)
+                cv2.rectangle(display_frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                cv2.putText(display_frame, color, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+            else:
+                print(f"Invalid contour for {color} cylinder: {len(cnt)} points")
 
-        cv2.imshow('frame', frame)
+        cv2.namedWindow('frame', cv2.WINDOW_NORMAL)
+        cv2.imshow('frame', display_frame)
         cv2.waitKey(1)
        
 

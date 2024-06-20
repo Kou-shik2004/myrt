@@ -77,11 +77,12 @@ class Video_Publisher(Node):
                    
         
         if detected_cylinders:
-            print("Detected cylinders:")
-        for color, approx in detected_cylinders:
-            print(f"- {color} cylinder")
+            print(f"Detected {len(detected_cylinders)} cylinders")
+            for color, cnt in detected_cylinders:
+                print(f"Detected {color} cylinder with {len(cnt)} contour points")
         else:
-            print("No cylinders detected.")
+            print("No cylinders detected")
+   
 
         frame_msg = self.bridge.cv2_to_imgmsg(frame, "bgr8")
         msg.image = frame_msg
