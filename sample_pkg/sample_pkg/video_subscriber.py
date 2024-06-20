@@ -4,6 +4,7 @@ from rclpy.node import Node
 from sensor_msgs.msg import Image
 from std_msgs.msg import String
 from custom_msgs.msg import Point,Contour,ImagePlusTupleList
+import numpy as np
 import cv2
 from cv_bridge import CvBridge
 
@@ -21,9 +22,13 @@ class Camera_sub(Node):
         cnt=[]
         for col in msg.col:
             color.append(col)
-        connn=msg.cnt
 
-        for color, cnt in zip(color, connn):
+        contour_list=msg.cnt
+
+        for contour in contour_list:
+            contour=np.array(contour)
+
+        for color, cnt in zip(color, contour_list):
 
             x, y, w, h = cv2.boundingRect(cnt)
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
