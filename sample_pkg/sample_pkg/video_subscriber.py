@@ -17,22 +17,21 @@ class Camera_sub(Node):
         self.bridge=CvBridge()
 
     def camCallback(self, msg):
-        frame=self.bridge.imgmsg_to_cv2(msg.image, "bgr8")
-        color=[]
-        cnt=[]
-        for col in msg.col:
-            color.append(col)
+        frame = self.bridge.imgmsg_to_cv2(msg.image, "bgr8")
+        colors = msg.col
+        contours = msg.cnt
 
-        contour_list=msg.cnt
-        
-        contour_list=[np.array(contour.points) for contour in contour_list]
-
-
-        for color, cnt in zip(color, contour_list):
+        for color, contour in zip(colors, contours):
+            # Convert the points to the format expected by cv2.boundingRect
+            cnt = np.array([(point.x, point.y) for point in contour.points], dtype=np.int32)
+            
+            # Reshape the array to the format expected by cv2.boundingRect
+            cnt = cnt.reshape((-1, 1, 2))
 
             x, y, w, h = cv2.boundingRect(cnt)
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
             cv2.putText(frame, color, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+
         cv2.imshow('frame', frame)
         cv2.waitKey(1)
        
