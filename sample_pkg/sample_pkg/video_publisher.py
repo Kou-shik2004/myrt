@@ -23,8 +23,8 @@ class Video_Publisher(Node):
         if not ret:
             self.get_logger().error('Failed to capture image')
             return
-
-        frame_msg = self.bridge.cv2_to_imgmsg(frame, "bgr8")
+        frame=cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        frame_msg = self.bridge.cv2_to_imgmsg(frame, "mono8")
         self.pub_.publish(frame_msg)
 
     def destroy_node(self):
