@@ -16,7 +16,7 @@ class Camera_sub(Node):
     def camCallback(self, msg):
         frame=self.bridge.imgmsg_to_cv2(msg, "bgr8")
         cv2.imshow('Frame',frame)
-        cv2.waitkey(1)
+        cv2.waitKey(1)
 
 
         
