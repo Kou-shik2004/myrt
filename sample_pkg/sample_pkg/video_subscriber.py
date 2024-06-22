@@ -12,7 +12,7 @@ class Camera_sub(Node):
 
     def __init__(self):
         super().__init__("rpi_video_subscriber")
-        self.sub_ = self.create_subscription(ImagePlusTupleList, '/rpi_video_feed', self.camCallback, 10)
+        self.sub_ = self.create_subscription(ImagePlusTupleList, '/rpi_video_feed', self.camCallback, 30)
         self.bridge = CvBridge()
 
     def camCallback(self, msg):
