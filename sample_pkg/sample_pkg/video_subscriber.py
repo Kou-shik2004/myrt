@@ -33,22 +33,20 @@ class Camera_sub(Node):
                 x, y, w, h = cv2.boundingRect(cnt)
                 print(f"Drawing bounding box for {color} cylinder at ({x}, {y}) with size {w}x{h}")
                 
-                # The bounding box is already drawn by the publisher, so we don't need to draw it again
-                # We'll just add the color label
+                # Draw the bounding box
+                cv2.rectangle(display_frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                
+                # Add the color label
                 cv2.putText(display_frame, color, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
                 
-                # Extract the distance information from the image
-                distance_text = display_frame[y-30:y, x:x+200]  # Adjust these values if needed
-                gray_text = cv2.cvtColor(distance_text, cv2.COLOR_BGR2GRAY)
-                _, binary_text = cv2.threshold(gray_text, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-                
-                # Use OCR to extract the distance (you might need to install pytesseract)
-                # import pytesseract
-                # distance = pytesseract.image_to_string(binary_text)
-                # print(f"Detected distance for {color} cylinder: {distance}")
-                
-                # For now, we'll just print that we detected the distance text
-                print(f"Detected distance text for {color} cylinder")
+                # Extract and display the distance if available
+                distance_text = display_frame[max(0, y-30):y, x:x+200]
+                if distance_text.size > 0:
+                    gray_text = cv2.cvtColor(distance_text, cv2.COLOR_BGR2GRAY)
+                    _, binary_text = cv2.threshold(gray_text, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+                    print(f"Detected distance text for {color} cylinder")
+                else:
+                    print(f"No distance text found for {color} cylinder")
             else:
                 print(f"Invalid contour for {color} cylinder: {len(cnt)} points")
 
