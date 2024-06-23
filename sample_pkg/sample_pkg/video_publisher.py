@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 import rclpy
 from rclpy.node import Node
-from sensor_msgs.msg import Image
-from std_msgs.msg import String
-from custom_msgs.msg import Point,Contour,ImagePlusTupleList
+from sensor_msgs.msg import CompressedImage
+from custom_msgs.msg import Point, Contour, ImagePlusTupleList
 import cv2
 from cv_bridge import CvBridge
 import numpy as np
@@ -17,55 +16,40 @@ color_ranges = {
 
 def detect_cylinders(frame):
     detected_cylinders = []
-    
-    # Convert to HSV color space
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-    
-    # Loop through each color range
     for color, (lower, upper) in color_ranges.items():
-        # Create a mask for the current color range
         mask = cv2.inRange(hsv, np.array(lower), np.array(upper))
-        
-        # Find contours in the mask
         contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        
-        # Loop through each contour
         for cnt in contours:
-            # Approximate the contour to a circle
             (x, y), radius = cv2.minEnclosingCircle(cnt)
-            
-            # Check if the contour is approximately circular
-            if radius > 10:  # Adjust this value based on your requirements
+            if radius > 10:
                 detected_cylinders.append((color, cnt))
-    
     return detected_cylinders
 
-class Video_Publisher(Node):
+class VideoPublisher(Node):
 
     def __init__(self):
         super().__init__('rpi_video_publisher')
         self.pub_ = self.create_publisher(ImagePlusTupleList, '/rpi_video_feed', 30)
-        timer_period = 0.05
-        self.timer_ = self.create_timer(timer_period, self.cameraCallback)
+        self.timer_ = self.create_timer(0.05, self.camera_callback)
         self.cap = cv2.VideoCapture(0)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
         self.bridge = CvBridge()
 
-    def cameraCallback(self):
+    def camera_callback(self):
         ret, frame = self.cap.read()
         if not ret:
             self.get_logger().error('Failed to capture image')
             return
-        #frame=cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
         detected_cylinders = detect_cylinders(frame)
-        
-        col_list=[]
+        col_list = []
         msg = ImagePlusTupleList()
 
         for color, cnt in detected_cylinders:
             col_list.append(color)
-            contour_list = [contour.tolist() for contour in cnt] #numpy array to normal
+            contour_list = [contour.tolist() for contour in cnt]
             for points_list in contour_list:
                 c = Contour()
                 for points in points_list:
@@ -74,19 +58,10 @@ class Video_Publisher(Node):
                     p.y = points[1]
                     c.points.append(p)
                 msg.cnt.append(c)
-                   
-        
-        if detected_cylinders:
-            print(f"Detected {len(detected_cylinders)} cylinders")
-            for color, cnt in detected_cylinders:
-                print(f"Detected {color} cylinder with {len(cnt)} contour points")
-        else:
-            print("No cylinders detected")
-   
 
-        frame_msg = self.bridge.cv2_to_imgmsg(frame, "bgr8")
+        frame_msg = self.bridge.cv2_to_compressed_imgmsg(frame)
         msg.image = frame_msg
-        msg.col=col_list
+        msg.col = col_list
         self.pub_.publish(msg)
 
     def destroy_node(self):
@@ -95,11 +70,9 @@ class Video_Publisher(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-
-    video_publisher = Video_Publisher()
+    video_publisher = VideoPublisher()
     print("Node started")
     rclpy.spin(video_publisher)
-    
     video_publisher.destroy_node()
     rclpy.shutdown()
 
