@@ -64,9 +64,10 @@ class VideoPublisher(Node):
 
         for color, mask in color_masks.items():
            
-            erode = cv2.erode(mask,kernel,iterations=2)
+            mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
+            mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
            
-            contours, _ = cv2.findContours(erode, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             
             # Filter contours by area
             min_area = 100 # Adjust this value as needed
@@ -74,10 +75,9 @@ class VideoPublisher(Node):
             
             self.get_logger().info(f'Number of {color} contours found: {len(contours)}')
 
+            
             msg = ImagePlusTupleList()
-
             msg.image = self.bridge.cv2_to_compressed_imgmsg(frame, dst_format='jpg')
-            msg.fil = self.bridge.cv2_to_compressed_imgmsg(erode, dst_format='jpg')
             
             for cnt in contours:
                 area = cv2.contourArea(cnt)

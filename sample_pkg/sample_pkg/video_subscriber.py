@@ -22,7 +22,7 @@ class CameraSubscriber(Node):
     def cam_callback(self, msg):
 
         frame = self.bridge.compressed_imgmsg_to_cv2(msg.image, "bgr8")
-        c = self.bridge.compressed_imgmsg_to_cv2(msg.fil, "bgr8")
+        
         display_img = frame.copy()
         
         contours = msg.cnt
@@ -42,7 +42,7 @@ class CameraSubscriber(Node):
             cv2.putText(display_img, f'{contour.color}: {area}', (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
 
            
-        cv2.imshow("filter",c)
+        
         cv2.imshow("bound",display_img)
 
         cv2.waitKey(1)
