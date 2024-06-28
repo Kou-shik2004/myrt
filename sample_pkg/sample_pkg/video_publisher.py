@@ -41,7 +41,7 @@ class VideoPublisher(Node):
 
     def __init__(self):
         super().__init__('rpi_video_publisher')
-        self.pub_ = self.create_publisher(ImagePlusTupleList, '/rpi_video_feed', 100)
+        self.pub_ = self.create_publisher(ImagePlusTupleList, '/rpi_video_feed', 1000)
         self.timer_ = self.create_timer(0.05, self.camera_callback)
         self.cap = cv2.VideoCapture(0)
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
@@ -62,7 +62,7 @@ class VideoPublisher(Node):
         color_masks = generatefilter(img, self.colors)
         msg = ImagePlusTupleList()
         msg.image = self.bridge.cv2_to_compressed_imgmsg(frame, dst_format='jpg')
-        
+
         for color, mask in color_masks.items():
             # Apply morphological operations
             mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
@@ -72,7 +72,7 @@ class VideoPublisher(Node):
             contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             
             # Filter contours by area
-            min_area = 20  # Adjust this value as needed
+            min_area = 100 # Adjust this value as needed
             contours = [cnt for cnt in contours if cv2.contourArea(cnt) > min_area]
             
             self.get_logger().info(f'Number of {color} contours found: {len(contours)}')
