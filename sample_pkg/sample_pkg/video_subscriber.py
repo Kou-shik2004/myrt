@@ -28,11 +28,10 @@ class CameraSubscriber(Node):
             area = w * h
             self.get_logger().info(f'Bounding box: x={x}, y={y}, w={w}, h={h}, area={area}')
             
-            if area > 1000:  # Adjust this threshold as needed
-                cv2.rectangle(display_img, (x,y), (x+w,y+h), (255,0,0), 2)
-                cv2.putText(display_img, f'Area: {area}', (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255,0,0), 2)
-            else:
-                self.get_logger().info(f'Contour area too small: {area}')
+            
+            cv2.rectangle(display_img, (x,y), (x+w,y+h), (255,0,0), 2)
+            cv2.putText(display_img, f'Area: {area}', (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255,0,0), 2)
+
     # def cam_callback(self, msg):
     #     frame = self.bridge.compressed_imgmsg_to_cv2(msg.image, "bgr8")
     #     display_img = frame.copy()
