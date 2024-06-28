@@ -8,7 +8,10 @@ import numpy as np
 import os
 
 # Loading caliberation data
-calibdata = '/home/pi/myrt_ws/src/sample_pkg/sample_pkg/calibdata.npz'
+calibdata_path = '/home/pi/myrt_ws/src/sample_pkg/sample_pkg/calibdata.npz'
+print(f"Loading calibration data from: {os.path.abspath(calibdata_path)}")
+calibdata = np.load(calibdata_path)
+print(calibdata.files)  # Print the keys to verify
 
 mtx = calibdata['mtx']
 dist = calibdata['dist']
