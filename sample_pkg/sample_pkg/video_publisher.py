@@ -44,8 +44,10 @@ class VideoPublisher(Node):
         self.pub_ = self.create_publisher(ImagePlusTupleList, '/rpi_video_feed', 100)
         self.timer_ = self.create_timer(0.05, self.camera_callback)
         self.cap = cv2.VideoCapture(0)
-        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
+        self.cap.set(cv2.CAP_PROP_FPS, 30)
+        self.cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))
         self.bridge = CvBridge()
 
     def camera_callback(self):
@@ -61,23 +63,26 @@ class VideoPublisher(Node):
         edges = cv2.Canny(erode,50,150,apertureSize=3)
         contours,_ = cv2.findContours(erode,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
         self.get_logger().info(f'Number of contours found: {len(contours)}')
+
         msg = ImagePlusTupleList()
-
+        msg.image = self.bridge.cv2_to_compressed_imgmsg(frame, dst_format='jpg')
+    
         for cnt in contours:
-            self.get_logger().info(f'Contour size: {cv2.contourArea(cnt)}')
-            contour_list = [contour.tolist() for contour in cnt]
-            for points_list in contour_list:
-                c = Contour()
-                for points in points_list:
-                    p = Point()
-                    p.x = points[0]
-                    p.y = points[1]
-                    c.points.append(p)
-                msg.cnt.append(c)
+            area = cv2.contourArea(cnt)
+            self.get_logger().info(f'Contour area: {area}')
+            contour_msg = Contour()
+            for point in cnt.reshape(-1, 2):
+                p = Point()
+                p.x = int(point[0])
+                p.y = int(point[1])
+                contour_msg.points.append(p)
+            msg.cnt.append(contour_msg)
+        
+        if contours:
+            self.pub_.publish(msg)
+        else:
+            self.get_logger().info('No contours found, skipping publish')
 
-        frame_msg = self.bridge.cv2_to_compressed_imgmsg(frame)
-        msg.image = frame_msg
-        self.pub_.publish(msg)
         
 
        
