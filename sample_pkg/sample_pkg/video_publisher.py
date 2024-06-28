@@ -5,12 +5,15 @@ from custom_msgs.msg import Point, Contour, ImagePlusTupleList
 import cv2
 from cv_bridge import CvBridge
 import numpy as np
+import os
 
 # Loading caliberation data
-calibdata = np.load('myrtcalb.npz')
+calibdata = '/home/pi/myrt_ws/src/sample_pkg/sample_pkg/calibdata.npz'
+
 mtx = calibdata['mtx']
 dist = calibdata['dist']
 newcammtx = calibdata['newcameramtx']
+
 kernel = np.ones((5,5),np.uint8)
 
 #colour ranges
