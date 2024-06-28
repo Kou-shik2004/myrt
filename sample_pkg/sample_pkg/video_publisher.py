@@ -60,10 +60,11 @@ class VideoPublisher(Node):
         erode = cv2.erode(filter,kernel,iterations=2)
         edges = cv2.Canny(erode,50,150,apertureSize=3)
         contours,_ = cv2.findContours(erode,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
-
+        self.get_logger().info(f'Number of contours found: {len(contours)}')
         msg = ImagePlusTupleList()
 
         for cnt in contours:
+            self.get_logger().info(f'Contour size: {cv2.contourArea(cnt)}')
             contour_list = [contour.tolist() for contour in cnt]
             for points_list in contour_list:
                 c = Contour()

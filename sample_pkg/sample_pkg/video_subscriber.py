@@ -17,6 +17,7 @@ class CameraSubscriber(Node):
         frame = self.bridge.compressed_imgmsg_to_cv2(msg.image, "bgr8")
         display_img = frame.copy()
         contours = msg.cnt
+        self.get_logger().info(f'Number of contours received: {len(contours)}')
 
         for contour in contours:
             
@@ -24,7 +25,8 @@ class CameraSubscriber(Node):
             cnt = cnt.reshape((-1, 1, 2))
 
             x,y,w,h = cv2.boundingRect(cnt)
-            if w*h > 4000:
+            self.get_logger().info(f'Bounding box: x={x}, y={y}, w={w}, h={h}, area={w*h}')
+            if w*h > 1000:
                 cv2.rectangle(display_img,(x,y),(x+w,y+h),(255,0,0),2)
 
         cv2.imshow("bound",display_img)
