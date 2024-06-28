@@ -13,44 +13,47 @@ class CameraSubscriber(Node):
         self.sub_ = self.create_subscription(ImagePlusTupleList, '/rpi_video_feed', self.cam_callback, 100)
         self.bridge = CvBridge()
 
+    #Test code to verify bounding box and area calculation
+    # def cam_callback(self, msg):
+
+        
+    #     frame = self.bridge.compressed_imgmsg_to_cv2(msg.image, "bgr8")
+    #     display_img = frame.copy()
+    #     contours = msg.cnt
+
+    #     # Draw a test rectangle and text
+    #     for contour in contours:
+    #         cnt = np.array([(point.x, point.y) for point in contour.points], dtype=np.int32)
+    #         self.get_logger().info(f'Contour points: {cnt}')
+    #         cnt = cnt.reshape((-1, 1, 2))
+
+    #         x, y, w, h = cv2.boundingRect(cnt)
+    #         area = w * h
+    #         self.get_logger().info(f'Bounding box: x={x}, y={y}, w={w}, h={h}, area={area}')
+            
+            
+    #         cv2.rectangle(display_img, (x,y), (x+w,y+h), (255,0,0), 2)
+    #         cv2.putText(display_img, f'Area: {area}', (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255,0,0), 2)
+
     def cam_callback(self, msg):
         frame = self.bridge.compressed_imgmsg_to_cv2(msg.image, "bgr8")
         display_img = frame.copy()
         contours = msg.cnt
+        self.get_logger().info(f'Number of contours received: {len(contours)}')
 
-        # Draw a test rectangle and text
         for contour in contours:
+            
             cnt = np.array([(point.x, point.y) for point in contour.points], dtype=np.int32)
-            self.get_logger().info(f'Contour points: {cnt}')
             cnt = cnt.reshape((-1, 1, 2))
 
-            x, y, w, h = cv2.boundingRect(cnt)
-            area = w * h
-            self.get_logger().info(f'Bounding box: x={x}, y={y}, w={w}, h={h}, area={area}')
+            x,y,w,h = cv2.boundingRect(cnt)
+            self.get_logger().info(f'Bounding box: x={x}, y={y}, w={w}, h={h}, area={w*h}')
             
-            
-            cv2.rectangle(display_img, (x,y), (x+w,y+h), (255,0,0), 2)
-            cv2.putText(display_img, f'Area: {area}', (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255,0,0), 2)
+            cv2.rectangle(display_img,(x,y),(x+w,y+h),(255,0,0),2)
 
-    # def cam_callback(self, msg):
-    #     frame = self.bridge.compressed_imgmsg_to_cv2(msg.image, "bgr8")
-    #     display_img = frame.copy()
-    #     contours = msg.cnt
-    #     self.get_logger().info(f'Number of contours received: {len(contours)}')
+        cv2.imshow("bound",display_img)
 
-    #     for contour in contours:
-            
-    #         cnt = np.array([(point.x, point.y) for point in contour.points], dtype=np.int32)
-    #         cnt = cnt.reshape((-1, 1, 2))
-
-    #         x,y,w,h = cv2.boundingRect(cnt)
-    #         self.get_logger().info(f'Bounding box: x={x}, y={y}, w={w}, h={h}, area={w*h}')
-    #         if w*h > 1000:
-    #             cv2.rectangle(display_img,(x,y),(x+w,y+h),(255,0,0),2)
-
-    #     cv2.imshow("bound",display_img)
-
-    #     cv2.waitKey(1)
+        cv2.waitKey(1)
 
 def main():
     rclpy.init()
