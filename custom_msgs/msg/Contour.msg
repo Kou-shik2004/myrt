@@ -1,2 +1,2 @@
-Point[] points
+Point[] points 
 string color

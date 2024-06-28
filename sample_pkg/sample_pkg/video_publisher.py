@@ -8,6 +8,7 @@ import numpy as np
 import os
 
 # Loading caliberation data
+
 calibdata_path = '/home/pi/myrt_ws/src/sample_pkg/sample_pkg/calibdata.npz'
 print(f"Loading calibration data from: {os.path.abspath(calibdata_path)}")
 calibdata = np.load(calibdata_path)
@@ -60,22 +61,23 @@ class VideoPublisher(Node):
         mapx,mapy = cv2.initUndistortRectifyMap(mtx,dist,None,newcammtx,(w,h),5)
         img = cv2.remap(frame,mapx,mapy,cv2.INTER_LINEAR)
         color_masks = generatefilter(img, self.colors)
-        msg = ImagePlusTupleList()
-        msg.image = self.bridge.cv2_to_compressed_imgmsg(frame, dst_format='jpg')
 
         for color, mask in color_masks.items():
-            # Apply morphological operations
-            mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
-            mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
-            
-            # Find contours
-            contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+           
+            erode = cv2.erode(mask,kernel,iterations=2)
+           
+            contours, _ = cv2.findContours(erode, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             
             # Filter contours by area
             min_area = 100 # Adjust this value as needed
             contours = [cnt for cnt in contours if cv2.contourArea(cnt) > min_area]
             
             self.get_logger().info(f'Number of {color} contours found: {len(contours)}')
+
+            msg = ImagePlusTupleList()
+
+            msg.image = self.bridge.cv2_to_compressed_imgmsg(frame, dst_format='jpg')
+            msg.fil = self.bridge.cv2_to_compressed_imgmsg(erode, dst_format='jpg')
             
             for cnt in contours:
                 area = cv2.contourArea(cnt)
