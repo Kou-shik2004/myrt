@@ -14,23 +14,40 @@ color_ranges = {
     "yellow": ([20, 100, 100], [30, 255, 255])
 }
 
-def detect_cylinders(frame):
-    detected_cylinders = []
+def detect_color(frame, lower_color, upper_color):
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-    for color, (lower, upper) in color_ranges.items():
-        mask = cv2.inRange(hsv, np.array(lower), np.array(upper))
-        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        for cnt in contours:
-            (x, y), radius = cv2.minEnclosingCircle(cnt)
-            if radius > 10:
-                detected_cylinders.append((color, cnt))
-    return detected_cylinders
+    mask = cv2.inRange(hsv, lower_color, upper_color)
+    return cv2.bitwise_and(frame, frame, mask=mask)
+
+def detect_cylinders(frame):
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    blurred = cv2.GaussianBlur(gray, (9, 9), 2)
+    edges = cv2.Canny(blurred, 50, 150)
+    
+    # Detect circles (cylinder cross-sections)
+    circles = cv2.HoughCircles(edges, cv2.HOUGH_GRADIENT, dp=1, minDist=50,
+                               param1=200, param2=30, minRadius=20, maxRadius=100)
+    
+    if circles is not None:
+        circles = np.uint16(np.around(circles))
+        for i in circles[0, :]:
+            # Draw the outer circle
+            cv2.circle(frame, (i[0], i[1]), i[2], (0, 255, 0), 2)
+            # Draw the center of the circle
+            cv2.circle(frame, (i[0], i[1]), 2, (0, 0, 255), 3)
+            
+            # Estimate distance (this is a placeholder - you'll need to calibrate this)
+            distance = 1000 / i[2]  # Example formula, needs calibration
+            cv2.putText(frame, f"Distance: {distance:.2f} cm", (i[0], i[1] - 20),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2)
+    
+    return frame
 
 class VideoPublisher(Node):
 
     def __init__(self):
         super().__init__('rpi_video_publisher')
-        self.pub_ = self.create_publisher(ImagePlusTupleList, '/rpi_video_feed', 30)
+        self.pub_ = self.create_publisher(ImagePlusTupleList, '/rpi_video_feed', 100)
         self.timer_ = self.create_timer(0.05, self.camera_callback)
         self.cap = cv2.VideoCapture(0)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
@@ -43,7 +60,7 @@ class VideoPublisher(Node):
             self.get_logger().error('Failed to capture image')
             return
 
-        detected_cylinders = detect_cylinders(frame)
+        detected_cylinders = detect_cylinders(frame.copy())
         col_list = []
         msg = ImagePlusTupleList()
 
@@ -63,6 +80,14 @@ class VideoPublisher(Node):
         msg.image = frame_msg
         msg.col = col_list
         self.pub_.publish(msg)
+        
+        if detected_cylinders:
+            self.get_logger().info(f"Detected {len(detected_cylinders)} cylinders")
+            for color, cnt in detected_cylinders:
+                self.get_logger().info(f"Detected {color} cylinder with {len(cnt)} contour points")
+        else:
+            self.get_logger().info("No cylinders detected")
+
 
     def destroy_node(self):
         self.cap.release()

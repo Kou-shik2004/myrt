@@ -10,7 +10,7 @@ class CameraSubscriber(Node):
 
     def __init__(self):
         super().__init__("rpi_video_subscriber")
-        self.sub_ = self.create_subscription(ImagePlusTupleList, '/rpi_video_feed', self.cam_callback, 30)
+        self.sub_ = self.create_subscription(ImagePlusTupleList, '/rpi_video_feed', self.cam_callback, 100)
         self.bridge = CvBridge()
         cv2.namedWindow('Cylinder Detection', cv2.WINDOW_NORMAL)
 
