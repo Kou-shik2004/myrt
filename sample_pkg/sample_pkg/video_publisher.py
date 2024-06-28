@@ -7,7 +7,7 @@ from cv_bridge import CvBridge
 import numpy as np
 
 # Loading caliberation data
-calibdata = np.load('calibdata.npz')
+calibdata = np.load('myrtcalb.npz')
 mtx = calibdata['mtx']
 dist = calibdata['dist']
 newcammtx = calibdata['newcameramtx']
