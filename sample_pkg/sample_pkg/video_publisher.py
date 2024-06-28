@@ -78,10 +78,9 @@ class VideoPublisher(Node):
                 contour_msg.points.append(p)
             msg.cnt.append(contour_msg)
         
-        if contours:
-            self.pub_.publish(msg)
-        else:
-            self.get_logger().info('No contours found, skipping publish')
+       
+        self.pub_.publish(msg)
+       
 
         
 

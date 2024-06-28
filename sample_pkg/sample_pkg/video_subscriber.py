@@ -51,7 +51,7 @@ class CameraSubscriber(Node):
             self.get_logger().info(f'Bounding box: x={x}, y={y}, w={w}, h={h}, area={w*h}')
             
             cv2.rectangle(display_img,(x,y),(x+w,y+h),(255,0,0),2)
-            cv2.putText(display_img, f'Area: {area}', (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255,0,0), 2)
+           
 
         cv2.imshow("bound",display_img)
 
