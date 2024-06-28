@@ -1,1 +1,2 @@
 Point[] points
+string color
