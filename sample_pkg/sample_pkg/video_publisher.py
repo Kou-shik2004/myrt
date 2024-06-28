@@ -56,7 +56,7 @@ class VideoPublisher(Node):
         h,w = frame.shape[:2]
         mapx,mapy = cv2.initUndistortRectifyMap(mtx,dist,None,newcammtx,(w,h),5)
         img = cv2.remap(frame,mapx,mapy,cv2.INTER_LINEAR)
-        filter = generatefilter(img,"red")
+        filter = generatefilter(img,"green")
         erode = cv2.erode(filter,kernel,iterations=2)
         edges = cv2.Canny(erode,50,150,apertureSize=3)
         contours,_ = cv2.findContours(erode,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
