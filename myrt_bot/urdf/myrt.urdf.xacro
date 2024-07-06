@@ -3,6 +3,7 @@
 
   <xacro:include filename="$(find myrt_bot)/urdf/materials.xacro" />
 <xacro:include filename="$(find myrt_bot)/urdf/ros2_control.xacro" />
+<!-- wtf is transmission -->
 <!-- <xacro:include filename="$(find myrt_bot)/urdf/myrt.trans" /> -->
 <xacro:include filename="$(find myrt_bot)/urdf/myrt.gazebo" />
 <xacro:include filename="$(find myrt_bot)/urdf/camera.xacro" />

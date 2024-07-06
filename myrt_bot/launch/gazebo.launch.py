@@ -16,10 +16,14 @@ def generate_launch_description():
     robot_description_config = xacro.process_file(xacro_file)
     robot_description = {'robot_description': robot_description_config.toxml()}
 
+    world = os.path.join(pkg_share,'worlds','fieldv2.sdf')
+
+
     # Gazebo launch
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([os.path.join(
             get_package_share_directory('gazebo_ros'), 'launch', 'gazebo.launch.py')]),
+        launch_arguments={'world':world, 'verbose':'true' }.items(),
     )
 
     # Spawn the robot in Gazebo
@@ -27,7 +31,14 @@ def generate_launch_description():
         package='gazebo_ros', 
         executable='spawn_entity.py',
         arguments=['-topic', 'robot_description',
-                   '-entity', 'myrt'],
+                   '-entity', 'myrt',
+                #    '-x', '0.0',
+                #    '-y', '-0.2',
+                    '-z', '0.09',
+                #     '-R', '0.0',
+                #     '-P','0.0',
+                #     '-Y','0.0'
+                   ],
         output='screen'
     )
 

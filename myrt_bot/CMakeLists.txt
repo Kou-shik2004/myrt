@@ -17,27 +17,27 @@ include_directories(include)
 
 # Install launch files
 install(DIRECTORY
-  launch
+  launch urdf meshes config worlds
   DESTINATION share/${PROJECT_NAME}
 )
 
-# Install URDF files
-install(DIRECTORY
-  urdf
-  DESTINATION share/${PROJECT_NAME}
-)
+# # Install URDF files
+# install(DIRECTORY
+#   urdf
+#   DESTINATION share/${PROJECT_NAME}
+# )
 
-# Install mesh files if you have any
-install(DIRECTORY
-   meshes
-   DESTINATION share/${PROJECT_NAME}
-)
+# # Install mesh files if you have any
+# install(DIRECTORY
+#    meshes
+#    DESTINATION share/${PROJECT_NAME}
+# )
 
-# Install config files if you have any
-install(DIRECTORY
-  config
-  DESTINATION share/${PROJECT_NAME}
-)
+# # Install config files if you have any
+# install(DIRECTORY
+#   config
+#   DESTINATION share/${PROJECT_NAME}
+# )
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
