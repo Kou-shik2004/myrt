@@ -3,9 +3,6 @@
 
 <xacro:property name="body_color" value="Gazebo/Silver" />
 
-<gazebo>
-  <plugin name="control" filename="libgazebo_ros_control.so"/>
-</gazebo>
 <gazebo reference="base_link">
   <material>${body_color}</material>
   <mu1>0.2</mu1>
@@ -41,5 +38,13 @@
   <mu2>0.2</mu2>
   <self_collide>true</self_collide>
 </gazebo>
+
+<gazebo>
+    <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
+      <robot_param>robot_description</robot_param>
+      <robot_param_node>robot_state_publisher</robot_param_node>
+      <parameters>$(find myrt_controller)/config/myrt_controllers.yaml</parameters>
+    </plugin>
+  </gazebo>
 
 </robot>
