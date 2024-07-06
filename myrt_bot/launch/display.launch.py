@@ -38,7 +38,7 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
-        joint_state_publisher_gui,
+        # joint_state_publisher_gui,
         robot_state_publisher,
         rviz
     ])

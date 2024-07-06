@@ -8,6 +8,8 @@
 <xacro:include filename="$(find myrt_bot)/urdf/camera.xacro" />
 
 
+<!-- <link name="world"/> -->
+
 <link name="base_link">
   <inertial>
     <origin xyz="0.08 0.09249999999999968 0.07996229424977229" rpy="0 0 0"/>
@@ -113,11 +115,17 @@
   </collision>
 </link>
 
+<!-- <joint name="virtual_joint" type="fixed">
+  <parent link="world"/>
+  <child link="base_link"/>
+  <origin xyz="0 0 0" rpy="0 0 0"/>
+</joint> -->
+
 <joint name="Revolute 2" type="continuous">
   <origin xyz="0.195 0.155 0.015" rpy="0 0 0"/>
   <parent link="base_link"/>
   <child link="rr_link_1"/>
-  <axis xyz="1.0 0.0 0.0"/>
+  <axis xyz="-1.0 0.0 0.0"/>
 </joint>
 
 <joint name="Revolute 3" type="continuous">
@@ -138,7 +146,7 @@
   <origin xyz="0.195 0.03 0.015" rpy="0 0 0"/>
   <parent link="base_link"/>
   <child link="rf_link_1"/>
-  <axis xyz="1.0 0.0 0.0"/>
+  <axis xyz="-1.0 0.0 0.0"/>
 </joint>
 <xacro:add_camera parent="base_link"/>
 </robot>
