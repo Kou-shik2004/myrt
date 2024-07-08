@@ -7,6 +7,7 @@
 <!-- <xacro:include filename="$(find myrt_bot)/urdf/myrt.trans" /> -->
 <xacro:include filename="$(find myrt_bot)/urdf/myrt.gazebo" />
 <xacro:include filename="$(find myrt_bot)/urdf/camera.xacro" />
+<xacro:include filename="$(find myrt_bot)/urdf/tof.xacro" />
 
 
 <!-- <link name="world"/> -->
@@ -150,4 +151,7 @@
   <axis xyz="-1.0 0.0 0.0"/>
 </joint>
 <xacro:add_camera parent="base_link"/>
+ <xacro:tf_luna_sensor name="tof_sensor" parent="base_link">
+    <origin xyz="0.095 0.21 0.07" rpy="0 0 1.5708"/>
+  </xacro:tf_luna_sensor>
 </robot>

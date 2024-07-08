@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="tf_luna_sensor">
+
+  <xacro:macro name="tf_luna_sensor" params="name parent *origin">
+    <joint name="${name}_joint" type="fixed">
+      <parent link="${parent}"/>
+      <child link="${name}_link"/>
+      
+      <xacro:insert_block name="origin" />
+    </joint>
+
+    <link name="${name}_link">
+      <visual>
+        <geometry>
+          <box size="0.02 0.02 0.02"/> <!-- Adjust size to match actual sensor dimensions -->
+        </geometry>
+        <material name="black">
+          <color rgba="0 0 0 1"/>
+        </material>
+      </visual>
+      <collision>
+        <geometry>
+          <box size="0.02 0.02 0.02"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="0.01"/> <!-- Adjust mass to match actual sensor mass -->
+        <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+      </inertial>
+    </link>
+
+    <gazebo reference="${name}_link">
+      <sensor type="ray" name="${name}">
+        <pose>0 0 0 0 0 0</pose>
+        <visualize>true</visualize>
+        <update_rate>10</update_rate>
+        <ray>
+          <scan>
+            <horizontal>
+              <samples>1</samples>
+              <resolution>1</resolution>
+              <min_angle>0</min_angle>
+              <max_angle>0</max_angle>
+            </horizontal>
+          </scan>
+          <range>
+            <min>0.02</min>
+            <max>8.0</max>
+            <resolution>0.01</resolution>
+          </range>
+        </ray>
+        <plugin name="gazebo_ros_${name}_controller" filename="libgazebo_ros_ray_sensor.so">
+          <ros>
+            <argument>~/out:=${name}/distance</argument>
+          </ros>
+          <output_type>sensor_msgs/Range</output_type>
+          <radiation_type>infrared</radiation_type>
+          <frame_name>${name}_link</frame_name>
+        </plugin>
+      </sensor>
+    </gazebo>
+  </xacro:macro>
+</robot>
