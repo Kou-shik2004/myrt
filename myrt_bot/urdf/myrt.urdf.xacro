@@ -10,7 +10,7 @@
 <xacro:include filename="$(find myrt_bot)/urdf/tof.xacro" />
 
 
-<!-- <link name="world"/> -->
+<link name="world"/>
 
 <link name="base_link">
   <inertial>
@@ -117,11 +117,11 @@
   </collision>
 </link>
 
-<!-- <joint name="virtual_joint" type="fixed">
+<joint name="virtual_joint" type="fixed">
   <parent link="world"/>
   <child link="base_link"/>
   <origin xyz="0 0 0" rpy="0 0 0"/>
-</joint> -->
+</joint>
 
 <joint name="Revolute 2" type="continuous">
   <origin xyz="0.195 0.155 0.015" rpy="0 0 0"/>
