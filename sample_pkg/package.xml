@@ -3,9 +3,15 @@
 <package format="3">
   <name>sample_pkg</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="pi@todo.todo">pi</maintainer>
-  <license>TODO: License declaration</license>
+  <description>Sample nodes: pub/sub demo and an OpenCV color-blob detection pipeline.</description>
+  <maintainer email="koushik20040804@gmail.com">koushik</maintainer>
+  <license>MIT</license>
+
+  <depend>rclpy</depend>
+  <depend>custom_msgs</depend>
+  <depend>cv_bridge</depend>
+  <exec_depend>python3-opencv</exec_depend>
+  <exec_depend>python3-numpy</exec_depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>

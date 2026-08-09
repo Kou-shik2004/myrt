@@ -13,13 +13,13 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='pi',
-    maintainer_email='pi@todo.todo',
-    description='TODO: Package description',
-    license='TODO: License declaration',
+    maintainer='koushik',
+    maintainer_email='koushik20040804@gmail.com',
+    description='Sample nodes: pub/sub demo and an OpenCV color-blob detection pipeline.',
+    license='MIT',
     tests_require=['pytest'],
     entry_points={
-        'console_scripts': ["con_node=sample_pkg.con_pub:main","cam_node=sample_pkg.video_publisher:main","cam_view_node=sample_pkg.video_subscriber:main","pub_node=sample_pkg.simple_pub:main","sub_node=sample_pkg.simple_sub:main",
+        'console_scripts': ["cam_node=sample_pkg.video_publisher:main","cam_view_node=sample_pkg.video_subscriber:main","pub_node=sample_pkg.simple_pub:main","sub_node=sample_pkg.simple_sub:main",
         ],
     },
 )

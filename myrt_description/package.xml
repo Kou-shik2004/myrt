@@ -3,17 +3,22 @@
 <package format="3">
   <name>myrt_description</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <description>Robot description (URDF, meshes), Gazebo models, and RViz configs for myrt.</description>
   <license>Apache 2.0</license>
   <maintainer email="koushik20040804@gmail.com">koushik</maintainer>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
+  <depend>rclcpp</depend>
+  <depend>std_msgs</depend>
+  <depend>tf2</depend>
+  <depend>tf2_ros</depend>
+  <depend>urdf</depend>
+  <depend>xacro</depend>
+
   <exec_depend>robot_state_publisher</exec_depend>
-  <exec_depend>urdf</exec_depend>
   <exec_depend>joint_state_publisher_gui</exec_depend>
   <exec_depend>rviz2</exec_depend>
-  <exec_depend>xacro</exec_depend>
   <exec_depend>gazebo_ros</exec_depend>
   <exec_depend>ros2launch</exec_depend>
   <exec_depend>gazebo_ros_pkgs</exec_depend>
